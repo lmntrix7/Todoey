@@ -9,13 +9,31 @@
 import UIKit
 
 class TodoListViewController: UITableViewController {
-    let defaults = UserDefaults.standard
-    var itemArray = ["budum","dudum","opps","I love my doggo"]
+    let defaults = UserDefaults.standard 
+     var itemArray = [Item]()
     
 
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
-        if case let items = defaults.array(forKey: "TodoListArray") as! [String] {
+        let newItem = Item()
+        newItem.title = "budum"
+        itemArray.append(newItem)
+        
+        
+        let newItem2 = Item()
+        newItem2.title = "dudum"
+        itemArray.append(newItem2)
+        
+        
+        
+        let newItem3 = Item()
+        newItem3.title = "doggo"
+        itemArray.append(newItem3)
+        
+        
+        
+       if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
             itemArray = items
             }
         
@@ -32,18 +50,21 @@ class TodoListViewController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
-        cell.textLabel?.text=itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+        cell.textLabel?.text=item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none
+        
+       
         return cell 
     }
    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(itemArray[indexPath.row])
+    
+    itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+    tableView.reloadData()
+    
    
-    if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
-        tableView.cellForRow(at: indexPath)?.accessoryType = .none
-    }
-    else{
-        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-    }
     tableView.deselectRow(at: indexPath, animated: true)
     
     }
@@ -58,7 +79,9 @@ class TodoListViewController: UITableViewController {
             //what will happen when user clicks + button
             print(textField.text!)
             print("Success")
-            self.itemArray.append(textField.text!)
+            let newItem = Item()
+            newItem .title = textField.text!
+            self.itemArray.append(newItem)
             self.defaults.set(self.itemArray, forKey: "TodoListArray")
             self.tableView.reloadData()
             
